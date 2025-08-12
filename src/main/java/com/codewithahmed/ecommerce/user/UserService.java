@@ -10,46 +10,34 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
 
-        if(users.isEmpty()){
+        if (users.isEmpty()) {
             throw new UsersNotFoundException("No users found in the system.");
-        }
-        else{
+        } else {
             return users.stream()
-                    .map(this::mapToDTO)
+                    .map(userMapper::toUserResponseDTO)
                     .collect(Collectors.toList());
         }
-    }
-
-    private UserResponseDTO mapToDTO(User user) {
-        return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                user.getPhone(),
-                user.isEmail_verified(),
-                user.getStatus(),
-                user.is_active()
-        );
     }
 
     public UserResponseDTO getUserById(Long id) {
         Optional<User> user = userRepository.findById(id.intValue());
 
-        if(user.isEmpty()){
-            throw new UsersNotFoundException("No user found in the system with this id -> "+id);
-        }
-        else{
-            return mapToDTO(user.get());
+        if (user.isEmpty()) {
+            throw new UsersNotFoundException("No user found in the system with this id -> " + id);
+        } else {
+            return userMapper.toUserResponseDTO(user.get());
         }
     }
 }
