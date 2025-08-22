@@ -30,7 +30,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Address> addresses;
-
+    
     @OneToOne(mappedBy = "user")
     private Cart cart;
 }

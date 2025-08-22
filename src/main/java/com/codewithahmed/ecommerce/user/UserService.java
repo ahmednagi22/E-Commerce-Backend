@@ -1,6 +1,7 @@
 package com.codewithahmed.ecommerce.user;
 
 import com.codewithahmed.ecommerce.common.exception.UsersNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,18 +9,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository,
-                       UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
 
-    public List<UserResponseDTO> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
 
         if (users.isEmpty()) {
@@ -31,13 +28,13 @@ public class UserService {
         }
     }
 
-    public UserResponseDTO getUserById(Long id) {
+    public UserResponseDto getUserById(Long id) {
         Optional<User> user = userRepository.findById(id.intValue());
 
-        if (user.isEmpty()) {
-            throw new UsersNotFoundException("No user found in the system with this id -> " + id);
-        } else {
+        if (user.isPresent()) {
             return userMapper.toUserResponseDTO(user.get());
+        } else {
+            throw new UsersNotFoundException("User with id " + id + " not found");
         }
     }
 }
