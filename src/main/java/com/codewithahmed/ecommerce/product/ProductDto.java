@@ -1,10 +1,11 @@
 package com.codewithahmed.ecommerce.product;
 
-import com.codewithahmed.ecommerce.user.User;
-import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ProductDto {
 
     private Long id;

@@ -1,5 +1,8 @@
 package com.codewithahmed.ecommerce.product;
 
+import com.codewithahmed.ecommerce.category.Category;
+import com.codewithahmed.ecommerce.category.CategoryRepository;
+import com.codewithahmed.ecommerce.common.exception.CategoryNotFoundException;
 import com.codewithahmed.ecommerce.common.exception.ProductNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
 
     public List<ProductDto> getAllProducts(Long categoryId) {
         if (categoryId != null) {
@@ -29,11 +33,25 @@ public class ProductService {
 
     public ProductDto getProductById(Long id) {
         Optional<Product> product = productRepository.findById(id);
-        if(product.isPresent()){
+        if (product.isPresent()) {
             return productMapper.toProductDto(product.get());
+        } else {
+            throw new ProductNotFoundException("Product with id " + id + " not found.");
         }
-        else{
-            throw new ProductNotFoundException("Product with id "+ id +" not found.");
+    }
+
+    public ProductDto createProduct(ProductDto productDto) {
+        // get category by id
+        Optional<Category> category = categoryRepository.findById(productDto.getCategoryId());
+        if (category.isPresent()) {
+            Product product = productMapper.toProduct(productDto);
+            product.setCategory(category.get());
+            productRepository.save(product);
+            productDto.setId(product.getId());
+            return productDto;
+        } else {
+            throw new CategoryNotFoundException("Category with id " + productDto.getCategoryId() + " not found.");
         }
     }
 }
+

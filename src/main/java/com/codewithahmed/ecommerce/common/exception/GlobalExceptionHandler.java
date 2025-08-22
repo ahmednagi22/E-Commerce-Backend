@@ -37,4 +37,15 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException ex,
+                                                                        HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }
