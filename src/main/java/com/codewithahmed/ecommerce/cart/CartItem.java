@@ -4,6 +4,8 @@ import com.codewithahmed.ecommerce.product.Product;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 public class CartItem {
@@ -20,4 +22,7 @@ public class CartItem {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    public BigDecimal getTotalPrice() {
+        return product.getPrice().multiply(BigDecimal.valueOf(quantity));
+    }
 }

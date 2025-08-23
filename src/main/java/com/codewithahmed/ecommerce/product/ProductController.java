@@ -28,8 +28,9 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto,
                                                     UriComponentsBuilder uriComponentsBuilder) {
-        var uri = uriComponentsBuilder.path("/api/v1/products/{id}").buildAndExpand(productDto.getId()).toUri();
-        return ResponseEntity.created(uri).body(productService.createProduct(productDto));
+        ProductDto createdProduct = productService.createProduct(productDto);
+        var uri = uriComponentsBuilder.path("/api/v1/products/{id}").buildAndExpand(createdProduct.getId()).toUri();
+        return ResponseEntity.created(uri).body(createdProduct);
     }
 
     @PutMapping("/{id}")

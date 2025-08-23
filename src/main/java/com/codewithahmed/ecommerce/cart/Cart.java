@@ -5,6 +5,7 @@ import com.codewithahmed.ecommerce.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -14,12 +15,12 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int itemsCount;
-    private Double totalAmount;
+    private BigDecimal totalPrice;
 
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart" , cascade = CascadeType.MERGE)
     List<CartItem> cartItems;
 }

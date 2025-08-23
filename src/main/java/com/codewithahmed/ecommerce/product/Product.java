@@ -5,6 +5,8 @@ import com.codewithahmed.ecommerce.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 public class Product {
@@ -14,7 +16,7 @@ public class Product {
     private String name;
     private String description;
     private String imageUrl;
-    private double price;
+    private BigDecimal price;
     private int stock;
     @ManyToOne
     @JoinColumn(name = "seller_id")
