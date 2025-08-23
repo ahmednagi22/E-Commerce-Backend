@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
 
-    @ExceptionHandler(UsersNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UsersNotFoundException ex,
-                                                              HttpServletRequest request) {
+    @ExceptionHandler({
+            UsersNotFoundException.class,
+            ResourceNotFoundException.class,
+            ProductNotFoundException.class,
+            CategoryNotFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException ex,
+                                                                 HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND,
                 ex.getMessage(),
@@ -26,26 +27,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException ex,
-                                                                        HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException ex,
-                                                                        HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
 }
