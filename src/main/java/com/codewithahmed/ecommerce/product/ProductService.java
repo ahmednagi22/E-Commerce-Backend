@@ -5,6 +5,7 @@ import com.codewithahmed.ecommerce.category.CategoryRepository;
 import com.codewithahmed.ecommerce.common.exception.CategoryNotFoundException;
 import com.codewithahmed.ecommerce.common.exception.ProductNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,6 +53,30 @@ public class ProductService {
         } else {
             throw new CategoryNotFoundException("Category with id " + productDto.getCategoryId() + " not found.");
         }
+    }
+
+    public ProductDto updateProduct(ProductDto productDto) {
+        Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(
+                () -> new CategoryNotFoundException("Category with id " + productDto.getCategoryId() + " not found.")
+        );
+
+        Product product = productRepository.findById(productDto.getId()).orElseThrow(
+                () -> new ProductNotFoundException("Product with id " + productDto.getId() + " not found.")
+        );
+
+        product.setCategory(category);
+        productMapper.updateProduct(productDto, product);
+        Product updated = productRepository.save(product);
+        return productMapper.toProductDto(updated);
+
+    }
+
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ProductNotFoundException("Product with id " + id + " not found.")
+        );
+        productRepository.delete(product);
+
     }
 }
 
