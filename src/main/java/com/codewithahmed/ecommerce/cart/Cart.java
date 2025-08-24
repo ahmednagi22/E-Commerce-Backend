@@ -21,6 +21,14 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart" , cascade = CascadeType.MERGE)
-    List<CartItem> cartItems;
+    @OneToMany(mappedBy = "cart" , cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    List<CartItem> items;
+
+    public BigDecimal getTotalPrice() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (CartItem cartItem : items) {
+            total = total.add(cartItem.getTotalPrice());
+        }
+        return total;
+    }
 }

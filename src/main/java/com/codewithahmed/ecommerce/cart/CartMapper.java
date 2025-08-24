@@ -7,6 +7,8 @@ import org.mapstruct.Mapping;
 public interface CartMapper {
 
     Cart toCart(CartDto cartDto);
+
+    @Mapping(target = "totalPrice", expression = "java(cart.getTotalPrice())")
     CartDto toCartDto(Cart cart);
 
     @Mapping(target = "product", source = "product")
