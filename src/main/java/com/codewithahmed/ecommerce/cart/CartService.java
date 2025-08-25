@@ -32,21 +32,8 @@ public class CartService {
                 () -> new ProductNotFoundException("Product with id " + request.getProductId() + " not found.")
         );
 
-        CartItem cartItem = cart.getItems()
-                .stream()
-                .filter(
-                        Item -> Item.getProduct().getId().equals(product.getId()))
-                .findFirst()
-                .orElse(null);
-        if (cartItem != null) {
-            cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
-        } else {
-            cartItem = new CartItem();
-            cartItem.setProduct(product);
-            cartItem.setQuantity(request.getQuantity());
-            cartItem.setCart(cart);
-            cart.getItems().add(cartItem);
-        }
+        CartItem cartItem = cart.addItem(product, request.getQuantity());
+
         cartRepository.save(cart);
         return cartMapper.toCartItemDto(cartItem);
     }
@@ -64,12 +51,7 @@ public class CartService {
         Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
                 () -> new CartNotFoundException("Cart with id " + cartId + " not found.")
         );
-        CartItem cartItem = cart.getItems()
-                .stream()
-                .filter(Item ->
-                        Item.getProduct().getId()
-                                .equals(productId)).findFirst()
-                .orElse(null);
+        CartItem cartItem = cart.getItem(productId);
         if (cartItem != null) {
             cartItem.setQuantity(request.getQuantity());
             cartRepository.save(cart);
