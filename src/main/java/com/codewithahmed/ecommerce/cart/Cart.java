@@ -1,12 +1,12 @@
 package com.codewithahmed.ecommerce.cart;
 
-import com.codewithahmed.ecommerce.common.exception.ProductNotFoundException;
 import com.codewithahmed.ecommerce.product.Product;
 import com.codewithahmed.ecommerce.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,8 +22,8 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    List<CartItem> items;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.MERGE, orphanRemoval = true,fetch = FetchType.EAGER)
+    List<CartItem> items = new ArrayList<>();
 
     public BigDecimal getTotalPrice() {
         BigDecimal total = BigDecimal.ZERO;
@@ -39,9 +39,7 @@ public class Cart {
                 .filter(Item ->
                         Item.getProduct().getId()
                                 .equals(productId)).findFirst()
-                .orElseThrow(
-                        () -> new ProductNotFoundException("Product with id " + productId + " not found.")
-                );
+                .orElse(null);
     }
 
     public CartItem addItem(Product product,int quantity) {
@@ -56,5 +54,15 @@ public class Cart {
             items.add(cartItem);
         }
         return cartItem;
+    }
+
+    public void removeItem(Long productId) {
+        CartItem cartItem = getItem(productId);
+        items.remove(cartItem);
+        cartItem.setCart(null);
+    }
+
+    public void clearCart() {
+        items.clear();
     }
 }

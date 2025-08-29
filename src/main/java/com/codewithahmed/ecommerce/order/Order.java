@@ -1,4 +1,4 @@
-package order;
+package com.codewithahmed.ecommerce.order;
 
 import com.codewithahmed.ecommerce.address.Address;
 import com.codewithahmed.ecommerce.user.User;

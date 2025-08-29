@@ -1,4 +1,4 @@
-package order;
+package com.codewithahmed.ecommerce.order;
 
 public enum OrderStatus {
     PENDING,

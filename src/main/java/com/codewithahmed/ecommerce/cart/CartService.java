@@ -4,9 +4,7 @@ import com.codewithahmed.ecommerce.common.exception.CartNotFoundException;
 import com.codewithahmed.ecommerce.common.exception.ProductNotFoundException;
 import com.codewithahmed.ecommerce.product.Product;
 import com.codewithahmed.ecommerce.product.ProductRepository;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -24,13 +22,17 @@ public class CartService {
     }
 
     public CartItemDto addItemToCart(Long cartId, AddItemToCartRequest request) {
-        // check cart id first
-        Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(
+                        () -> new ProductNotFoundException("Product with id " + request.getProductId() + " not found.")
+                );
+
+        Cart cart = cartRepository.getCartWithItems(cartId)
+                .orElseThrow(
                 () -> new CartNotFoundException("Cart with id " + cartId + " not found.")
         );
-        Product product = productRepository.findById(request.getProductId()).orElseThrow(
-                () -> new ProductNotFoundException("Product with id " + request.getProductId() + " not found.")
-        );
+
 
         CartItem cartItem = cart.addItem(product, request.getQuantity());
 
@@ -59,6 +61,23 @@ public class CartService {
         } else {
             return null;
         }
+    }
+
+    public void removeItem(Long cartId, Long productId) {
+        Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
+                ()->new CartNotFoundException("Cart with id " + cartId + " not found."));
+
+        cart.removeItem(productId);
+        cartRepository.save(cart);
+
+
+    }
+
+    public void clearCart(Long cartId) {
+        Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
+                ()->new CartNotFoundException("Cart with id " + cartId + " not found."));
+        cart.clearCart();
+        cartRepository.save(cart);
     }
 }
 
