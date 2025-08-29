@@ -1,11 +1,14 @@
 package com.codewithahmed.ecommerce.auth;
 
-import com.codewithahmed.ecommerce.user.Role;
+
+import com.codewithahmed.ecommerce.address.Address;
+import com.codewithahmed.ecommerce.address.AddressDto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+
 @Data
-public class RegisterDTO {
+public class RegisterDto {
 
     @NotEmpty(message = "Name is required")
     private String name;
@@ -17,5 +20,6 @@ public class RegisterDTO {
     private String password;
     @Pattern(regexp = "^(\\+\\d{1,3})?[0-9]{10,11}$", message = "Invalid phone number")
     private String phone;
-    private Role role;
+    private AddressDto address;
+
 }

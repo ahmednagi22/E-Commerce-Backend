@@ -11,7 +11,5 @@ public class UserResponseDto {
     private String email;
     private Role role;
     private String phone;
-    private boolean email_verified;
-    private AccountStatus status;
-    private boolean is_active;
+    private AccountStatus accountStatus;
 }

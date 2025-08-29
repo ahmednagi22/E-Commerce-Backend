@@ -1,5 +1,8 @@
 package com.codewithahmed.ecommerce.cart;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @AllArgsConstructor
+@Tag(name = "Carts")
 @RequestMapping("/api/v1/carts")
 public class CartController {
     private final CartService cartService;
@@ -26,7 +30,8 @@ public class CartController {
     }
 
     @PostMapping("/{cartId}/items")
-    public ResponseEntity<CartItemDto> addItemToCart(@PathVariable Long cartId,
+    @Operation(summary = "add item to cart using product id")
+    public ResponseEntity<CartItemDto> addItemToCart(@Parameter(name="cart id") @PathVariable Long cartId,
                                                      @RequestBody AddItemToCartRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(cartService.addItemToCart(cartId, request));

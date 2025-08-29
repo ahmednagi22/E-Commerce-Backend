@@ -1,8 +1,8 @@
 package com.codewithahmed.ecommerce.user;
 
 public enum AccountStatus {
-    PENDING,
+    PENDING_VERIFICATION,
     ACTIVE,
-    BLOCKED,
-    DELETED
+    SUSPENDED,
+    DEACTIVATED
 }

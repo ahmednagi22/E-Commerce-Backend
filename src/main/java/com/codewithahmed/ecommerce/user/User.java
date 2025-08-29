@@ -6,6 +6,7 @@ import com.codewithahmed.ecommerce.product.Product;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,19 +19,24 @@ public class User {
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.CUSTOMER;
     @Enumerated(EnumType.STRING)
-    private AccountStatus Status;
+    private AccountStatus accountStatus = AccountStatus.PENDING_VERIFICATION;
     private String phone;
-    private boolean is_active;
-    private boolean email_verified;
 
     @OneToMany(mappedBy = "seller")
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Address> addresses;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
     
     @OneToOne(mappedBy = "user")
     private Cart cart;
+
+    public void addAddress(Address address) {
+        addresses.add(address);
+        address.setUser(this);
+    }
+
+
 }

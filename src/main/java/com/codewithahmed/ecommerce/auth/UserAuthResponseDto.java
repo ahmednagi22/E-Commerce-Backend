@@ -1,19 +1,22 @@
 package com.codewithahmed.ecommerce.auth;
 
+import com.codewithahmed.ecommerce.address.Address;
+import com.codewithahmed.ecommerce.address.AddressDto;
 import com.codewithahmed.ecommerce.user.AccountStatus;
 import com.codewithahmed.ecommerce.user.Role;
 
 import lombok.Data;
 
-@Data
-public class UserAuthResponseDTO {
+import java.util.List;
 
+@Data
+public class UserAuthResponseDto {
+
+    private Long id;
     private String name;
     private String email;
-    private String password;
     private String phone;
     private Role role;
-    private AccountStatus status;
-    private boolean is_active;
-    private boolean email_verified;
+    private AccountStatus accountStatus;
+    private List<AddressDto> addresses;
 }
