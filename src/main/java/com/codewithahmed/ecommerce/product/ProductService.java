@@ -2,10 +2,8 @@ package com.codewithahmed.ecommerce.product;
 
 import com.codewithahmed.ecommerce.category.Category;
 import com.codewithahmed.ecommerce.category.CategoryRepository;
-import com.codewithahmed.ecommerce.common.exception.CategoryNotFoundException;
-import com.codewithahmed.ecommerce.common.exception.ProductNotFoundException;
+import com.codewithahmed.ecommerce.common.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +35,7 @@ public class ProductService {
         if (product.isPresent()) {
             return productMapper.toProductDto(product.get());
         } else {
-            throw new ProductNotFoundException("Product with id " + id + " not found.");
+            throw new ResourceNotFoundException("Product with id " + id + " not found.");
         }
     }
 
@@ -51,17 +49,17 @@ public class ProductService {
             productDto.setId(product.getId());
             return productDto;
         } else {
-            throw new CategoryNotFoundException("Category with id " + productDto.getCategoryId() + " not found.");
+            throw new ResourceNotFoundException("Category with id " + productDto.getCategoryId() + " not found.");
         }
     }
 
     public ProductDto updateProduct(ProductDto productDto) {
         Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(
-                () -> new CategoryNotFoundException("Category with id " + productDto.getCategoryId() + " not found.")
+                () -> new ResourceNotFoundException("Category with id " + productDto.getCategoryId() + " not found.")
         );
 
         Product product = productRepository.findById(productDto.getId()).orElseThrow(
-                () -> new ProductNotFoundException("Product with id " + productDto.getId() + " not found.")
+                () -> new ResourceNotFoundException("Product with id " + productDto.getId() + " not found.")
         );
 
         product.setCategory(category);
@@ -73,7 +71,7 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id).orElseThrow(
-                () -> new ProductNotFoundException("Product with id " + id + " not found.")
+                () -> new ResourceNotFoundException("Product with id " + id + " not found.")
         );
         productRepository.delete(product);
 

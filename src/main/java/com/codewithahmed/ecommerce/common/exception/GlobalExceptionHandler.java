@@ -3,6 +3,7 @@ package com.codewithahmed.ecommerce.common.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,13 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler({
-            UsersNotFoundException.class,
-            ResourceNotFoundException.class,
-            ProductNotFoundException.class,
-            CategoryNotFoundException.class,
-            CartNotFoundException.class
-    })
+    @ExceptionHandler({ResourceNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException ex,
                                                                  HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -27,8 +22,18 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler({BadCredentialsException.class})
+    public ResponseEntity<ErrorResponse> handelBadCredentialException(BadCredentialsException ex,
+                                                                 HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(EmailAlreadyExistsException ex,
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistException(EmailAlreadyExistsException ex,
                                                                  HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT,

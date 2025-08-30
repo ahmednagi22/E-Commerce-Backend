@@ -1,7 +1,6 @@
 package com.codewithahmed.ecommerce.cart;
 
-import com.codewithahmed.ecommerce.common.exception.CartNotFoundException;
-import com.codewithahmed.ecommerce.common.exception.ProductNotFoundException;
+import com.codewithahmed.ecommerce.common.exception.ResourceNotFoundException;
 import com.codewithahmed.ecommerce.product.Product;
 import com.codewithahmed.ecommerce.product.ProductRepository;
 import lombok.AllArgsConstructor;
@@ -25,12 +24,12 @@ public class CartService {
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(
-                        () -> new ProductNotFoundException("Product with id " + request.getProductId() + " not found.")
+                        () -> new ResourceNotFoundException("Product with id " + request.getProductId() + " not found.")
                 );
 
         Cart cart = cartRepository.getCartWithItems(cartId)
                 .orElseThrow(
-                () -> new CartNotFoundException("Cart with id " + cartId + " not found.")
+                () -> new ResourceNotFoundException("Cart with id " + cartId + " not found.")
         );
 
 
@@ -42,7 +41,7 @@ public class CartService {
 
     public CartDto getCartById(Long cartId) {
         Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
-                () -> new CartNotFoundException("Cart with id " + cartId + " not found.")
+                () -> new ResourceNotFoundException("Cart with id " + cartId + " not found.")
         );
         return cartMapper.toCartDto(cart);
     }
@@ -51,7 +50,7 @@ public class CartService {
                                       Long productId,
                                       UpdateCartItemRequest request) {
         Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
-                () -> new CartNotFoundException("Cart with id " + cartId + " not found.")
+                () -> new ResourceNotFoundException("Cart with id " + cartId + " not found.")
         );
         CartItem cartItem = cart.getItem(productId);
         if (cartItem != null) {
@@ -65,7 +64,7 @@ public class CartService {
 
     public void removeItem(Long cartId, Long productId) {
         Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
-                ()->new CartNotFoundException("Cart with id " + cartId + " not found."));
+                ()->new ResourceNotFoundException("Cart with id " + cartId + " not found."));
 
         cart.removeItem(productId);
         cartRepository.save(cart);
@@ -75,7 +74,7 @@ public class CartService {
 
     public void clearCart(Long cartId) {
         Cart cart = cartRepository.getCartWithItems(cartId).orElseThrow(
-                ()->new CartNotFoundException("Cart with id " + cartId + " not found."));
+                ()->new ResourceNotFoundException("Cart with id " + cartId + " not found."));
         cart.clearCart();
         cartRepository.save(cart);
     }
