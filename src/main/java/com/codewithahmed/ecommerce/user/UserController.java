@@ -17,7 +17,7 @@ public class UserController {
     //update user
     //delete user
     private final UserService userService;
-
+    
     @GetMapping
     public ResponseEntity<List<UserResponseDto>>getAllUsers(){
             return new ResponseEntity<>(
