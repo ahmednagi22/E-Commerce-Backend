@@ -46,4 +46,14 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    public UserResponseDto getUserByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return userMapper.toUserResponseDTO(user.get());
+        }else {
+            throw new ResourceNotFoundException("User with email " + email + " not found");
+        }
+
+    }
 }

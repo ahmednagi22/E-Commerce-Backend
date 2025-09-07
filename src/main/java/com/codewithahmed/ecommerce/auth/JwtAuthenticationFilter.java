@@ -1,6 +1,5 @@
 package com.codewithahmed.ecommerce.auth;
 
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             var authentication = new UsernamePasswordAuthenticationToken(
-                    jwtService.geEmailFromToken(token),
+                    jwtService.getUserIdFromToken(token),
                     null,
                     null
             );

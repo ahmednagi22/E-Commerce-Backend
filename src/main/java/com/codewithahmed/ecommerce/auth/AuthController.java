@@ -1,5 +1,7 @@
 package com.codewithahmed.ecommerce.auth;
 
+import com.codewithahmed.ecommerce.user.UserRepository;
+import com.codewithahmed.ecommerce.user.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,8 @@ public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<UserAuthResponseDto> registerUser(@Valid @RequestBody RegisterDto dto) {
@@ -30,7 +34,8 @@ public class AuthController {
                         request.getPassword()
                 )
         );
-        var token = jwtService.generateJwtToken(request.getEmail());
+        var user = userService.getUserByEmail(request.getEmail());
+        var token = jwtService.generateJwtToken(user);
         return ResponseEntity.ok(new JwtResponse(token));
     }
     @PostMapping("/validate")
