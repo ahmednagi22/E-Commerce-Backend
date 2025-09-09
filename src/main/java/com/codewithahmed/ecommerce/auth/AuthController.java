@@ -1,7 +1,10 @@
 package com.codewithahmed.ecommerce.auth;
 
+import com.codewithahmed.ecommerce.config.JwtConfig;
 import com.codewithahmed.ecommerce.user.UserRepository;
 import com.codewithahmed.ecommerce.user.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +20,7 @@ public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final JwtConfig jwtConfig;
     private final UserService userService;
 
     @PostMapping("/register")
@@ -27,7 +30,8 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request,
+                                             HttpServletResponse response) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -35,12 +39,35 @@ public class AuthController {
                 )
         );
         var user = userService.getUserByEmail(request.getEmail());
-        var token = jwtService.generateJwtToken(user);
-        return ResponseEntity.ok(new JwtResponse(token));
+
+        var accessToken = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+
+        var cookie = new Cookie("refreshToken", refreshToken.toString());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/auth/refresh");
+        cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());//7 days
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
-    @PostMapping("/validate")
-    public boolean validateToken(@RequestHeader("Authorization") String authHeader) {
-        var token = authHeader.replace("Bearer ", "");
-        return jwtService.validateJwtToken(token);
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refreshToken(@CookieValue("refreshToken") String refreshToken) {
+        var jwt = jwtService.parseToken(refreshToken);
+        if(jwt == null||jwt.isExpired()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        var user = userService.getUserById(jwt.getUserId());
+        var accessToken = jwtService.generateAccessToken(user);
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
+
+
+//    @PostMapping("/validate")
+//    public boolean validateToken(@RequestHeader("Authorization") String authHeader) {
+//        var token = authHeader.replace("Bearer ", "");
+//        return jwtService.validateJwtToken(token);
+//    }
 }

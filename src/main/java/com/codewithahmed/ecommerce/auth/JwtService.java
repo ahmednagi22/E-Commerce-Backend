@@ -1,66 +1,54 @@
 package com.codewithahmed.ecommerce.auth;
 
+import com.codewithahmed.ecommerce.config.JwtConfig;
 import com.codewithahmed.ecommerce.user.UserResponseDto;
-import com.codewithahmed.ecommerce.user.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class JwtService {
-    @Value("${secret}")
-    private String secret;
-    private final UserService userService;
-    //    public String generateJwtToken(String email) {
-//        final long EXPIRATION_TIME = 86400; //1day
-//        return Jwts.builder()
-//                .subject(email)
-//                .issuedAt(new Date())
-//                .expiration(new Date(System.currentTimeMillis() + 1000 * EXPIRATION_TIME))
-//                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
-//                .compact();
-//    }
-public String generateJwtToken(UserResponseDto userDto) {
-    final long EXPIRATION_TIME = 86400; //  1day
-    return Jwts.builder()
-            .subject(userDto.getId().toString())
-            .claim("name", userDto.getName())
-            .claim("email", userDto.getEmail())
-            .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + 1000 * EXPIRATION_TIME))
-            .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
-            .compact();
-}
 
-    public boolean validateJwtToken(String token) {
+    private final JwtConfig jwtConfig;
+
+    public Jwt generateAccessToken(UserResponseDto userDto) {
+        return generateToken(userDto, jwtConfig.getAccessTokenExpiration());
+    }
+
+    public Jwt generateRefreshToken(UserResponseDto userDto) {
+        return generateToken(userDto, jwtConfig.getRefreshTokenExpiration());
+    }
+
+    private Jwt generateToken(UserResponseDto userDto, long EXPIRATION_TIME) {
+        var claims = Jwts.claims()
+                .subject(userDto.getId().toString())
+                .add("name", userDto.getName())
+                .add("email", userDto.getEmail())
+                .add("role", userDto.getRole())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * EXPIRATION_TIME))
+                .build();
+        return new Jwt(claims, jwtConfig.getSecretKey());
+    }
+
+    public Jwt parseToken(String token) {
         try {
-            var claims = getClaims(token);
-
-            return claims.getExpiration().after(new Date());
-
+            return new Jwt(getClaims(token), jwtConfig.getSecretKey());
         } catch (JwtException e) {
-            return false;
+            return null;
         }
-
     }
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .verifyWith(jwtConfig.getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
-    public Long getUserIdFromToken(String token) {
-        return Long.valueOf(getClaims(token).getSubject());
-    }
-
 }
