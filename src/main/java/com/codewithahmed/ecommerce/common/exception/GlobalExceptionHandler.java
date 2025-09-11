@@ -53,4 +53,15 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<ErrorResponse> handelPaymentException(MethodArgumentNotValidException ex,
+                                                                               HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse,  HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }

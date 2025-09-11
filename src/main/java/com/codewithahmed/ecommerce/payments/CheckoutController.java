@@ -1,6 +1,7 @@
 package com.codewithahmed.ecommerce.payments;
 
 import com.codewithahmed.ecommerce.common.exception.ErrorResponse;
+import com.codewithahmed.ecommerce.common.exception.PaymentException;
 import com.stripe.exception.StripeException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,15 +19,8 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @PostMapping("/checkout")
-    public ResponseEntity<?> checkout(@Valid @RequestBody CheckoutRequest request) {
-        try {
-            return ResponseEntity.ok(checkoutService.checkout(request));
-        } catch (StripeException ex) {
-            var errorResponse = new ErrorResponse(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ex.getMessage(), "/checkout");
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    public ResponseEntity<CheckoutResponse> checkout(@Valid @RequestBody CheckoutRequest request) {
 
+        return ResponseEntity.ok(checkoutService.checkout(request));
+    }
 }
