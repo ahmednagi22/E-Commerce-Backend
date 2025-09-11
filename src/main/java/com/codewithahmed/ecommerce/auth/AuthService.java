@@ -3,10 +3,11 @@ package com.codewithahmed.ecommerce.auth;
 import com.codewithahmed.ecommerce.address.Address;
 import com.codewithahmed.ecommerce.address.AddressMapper;
 import com.codewithahmed.ecommerce.common.exception.EmailAlreadyExistsException;
-import com.codewithahmed.ecommerce.common.exception.ResourceNotFoundException;
+import com.codewithahmed.ecommerce.user.User;
 import com.codewithahmed.ecommerce.user.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +32,14 @@ public class AuthService {
             userRepository.save(user);
             return authMapper.toDto(user);
         }
+    }
+
+    public User getCurrentUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String userIdStr = authentication.getPrincipal().toString();
+
+        Long userId = Long.parseLong(userIdStr);
+        return userRepository.findById(userId).orElse(null);
     }
 }

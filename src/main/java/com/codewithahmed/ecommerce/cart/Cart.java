@@ -25,6 +25,9 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.MERGE, orphanRemoval = true,fetch = FetchType.EAGER)
     List<CartItem> items = new ArrayList<>();
 
+    public boolean isEmpty(){
+        return items.isEmpty();
+    }
     public BigDecimal getTotalPrice() {
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem cartItem : items) {
