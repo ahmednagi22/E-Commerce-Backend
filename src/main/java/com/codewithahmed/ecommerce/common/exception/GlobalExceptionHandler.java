@@ -1,5 +1,6 @@
 package com.codewithahmed.ecommerce.common.exception;
 
+import com.codewithahmed.ecommerce.payments.PaymentException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

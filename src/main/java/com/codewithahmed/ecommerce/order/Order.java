@@ -2,16 +2,15 @@ package com.codewithahmed.ecommerce.order;
 
 import com.codewithahmed.ecommerce.address.Address;
 import com.codewithahmed.ecommerce.cart.Cart;
+import com.codewithahmed.ecommerce.payments.PaymentStatus;
 import com.codewithahmed.ecommerce.user.User;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,7 +27,7 @@ public class Order {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private PaymentStatus paymentStatus;
     private BigDecimal totalPrice;
 
 
@@ -44,7 +43,7 @@ public class Order {
     public static Order fromCart(Cart cart, User user){
         var order = new Order();
         order.setUser(user);
-        order.setOrderStatus(OrderStatus.PENDING);
+        order.setPaymentStatus(PaymentStatus.PENDING);
         order.setTotalPrice(cart.getTotalPrice());
         cart.getItems().forEach(item -> {
             var orderItem = new OrderItem(item.getProduct(),order,item.getQuantity());

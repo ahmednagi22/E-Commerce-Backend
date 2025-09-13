@@ -1,4 +1,4 @@
-package com.codewithahmed.ecommerce.config;
+package com.codewithahmed.ecommerce.payments;
 
 import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;

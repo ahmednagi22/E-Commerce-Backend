@@ -1,26 +1,34 @@
 package com.codewithahmed.ecommerce.payments;
 
-import com.codewithahmed.ecommerce.common.exception.ErrorResponse;
-import com.codewithahmed.ecommerce.common.exception.PaymentException;
-import com.stripe.exception.StripeException;
+import com.stripe.exception.SignatureVerificationException;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
-@AllArgsConstructor
-@RequestMapping("/api/v1")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/checkout")
 public class CheckoutController {
     private final CheckoutService checkoutService;
 
-    @PostMapping("/checkout")
+    @PostMapping
     public ResponseEntity<CheckoutResponse> checkout(@Valid @RequestBody CheckoutRequest request) {
-
         return ResponseEntity.ok(checkoutService.checkout(request));
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity<Void> handelWebHook(
+            @RequestHeader Map<String,String> headers,
+            @RequestBody String payload
+    ) {
+        try {
+            checkoutService.handelWebHook(new WebHookRequest(headers,payload));
+            return ResponseEntity.ok().build();
+        } catch (SignatureVerificationException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
