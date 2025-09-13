@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
                                                                                HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST,
-                ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage(),
+                ex.getBindingResult().getAllErrors().get(0).getDefaultMessage(),
                 request.getRequestURI()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
