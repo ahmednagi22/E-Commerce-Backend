@@ -3,6 +3,9 @@ package com.codewithahmed.ecommerce.product;
 import com.codewithahmed.ecommerce.auth.AuthService;
 import com.codewithahmed.ecommerce.category.CategoryNotFoundException;
 import com.codewithahmed.ecommerce.category.CategoryRepository;
+import com.codewithahmed.ecommerce.common.exception.AccessDeniedException;
+import com.codewithahmed.ecommerce.user.Role;
+import com.codewithahmed.ecommerce.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -70,12 +73,19 @@ public class ProductService {
 //
 //    }
 //
-//    public void deleteProduct(Long id) {
-//        Product product = productRepository.findById(id).orElseThrow(
-//                () -> new ResourceNotFoundException("Product with id " + id + " not found.")
-//        );
-//        productRepository.delete(product);
-//
-//    }
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ProductNotFoundException("Product with id " + id + " not found.")
+        );
+
+        User user = authService.getCurrentUser();
+        if(user.getId().equals(product.getSeller().getId()) || user.getRole().equals(Role.ADMIN)){
+            productRepository.delete(product);
+        }
+        else{
+            throw new AccessDeniedException("You are not allowed to delete this product");
+        }
+
+    }
 }
 
