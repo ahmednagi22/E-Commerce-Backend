@@ -15,9 +15,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    //add new user
-    //update user
-
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> me() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();

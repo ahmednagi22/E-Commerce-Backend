@@ -1,6 +1,8 @@
 package com.codewithahmed.ecommerce.common.exception;
 
+import com.codewithahmed.ecommerce.category.CategoryNotFoundException;
 import com.codewithahmed.ecommerce.payments.PaymentException;
+import com.codewithahmed.ecommerce.product.ProductNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler({ResourceNotFoundException.class})
+    @ExceptionHandler({ResourceNotFoundException.class,
+                       ProductNotFoundException.class,
+                       CategoryNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException ex,
                                                                  HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -49,7 +53,7 @@ public class GlobalExceptionHandler {
                                                                                HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST,
-                ex.getBindingResult().getAllErrors().get(0).getDefaultMessage(),
+                ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage(),
                 request.getRequestURI()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

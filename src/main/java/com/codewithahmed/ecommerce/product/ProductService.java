@@ -1,8 +1,8 @@
 package com.codewithahmed.ecommerce.product;
 
-import com.codewithahmed.ecommerce.category.Category;
+import com.codewithahmed.ecommerce.auth.AuthService;
+import com.codewithahmed.ecommerce.category.CategoryNotFoundException;
 import com.codewithahmed.ecommerce.category.CategoryRepository;
-import com.codewithahmed.ecommerce.common.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,66 +15,67 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
+    private final AuthService authService;
 
-    public List<ProductDto> getAllProducts(Long categoryId) {
+    public List<ProductResponse> getAllProducts(Long categoryId) {
         if (categoryId != null) {
             return productRepository.findByCategoryId(categoryId)
                     .stream()
-                    .map(productMapper::toProductDto)
+                    .map(productMapper::toProductResponse)
                     .toList();
         } else {
             return productRepository.findAll()
                     .stream()
-                    .map(productMapper::toProductDto)
+                    .map(productMapper::toProductResponse)
                     .toList();
         }
     }
 
-    public ProductDto getProductById(Long id) {
-        Optional<Product> product = productRepository.findById(id);
+    public ProductResponse getProductById(Long id) {
+        var product = productRepository.findById(id);
         if (product.isPresent()) {
-            return productMapper.toProductDto(product.get());
+            return productMapper.toProductResponse(product.get());
         } else {
-            throw new ResourceNotFoundException("Product with id " + id + " not found.");
+            throw new ProductNotFoundException("Product with id " + id + " not found.");
         }
     }
-
-    public ProductDto createProduct(ProductDto productDto) {
+//
+    public ProductResponse createProduct(ProductRequest productRequest) {
         // get category by id
-        Optional<Category> category = categoryRepository.findById(productDto.getCategoryId());
+        var category = categoryRepository.findById(productRequest.getCategoryId());
         if (category.isPresent()) {
-            Product product = productMapper.toProduct(productDto);
+            Product product = productMapper.toProduct(productRequest);
             product.setCategory(category.get());
+            product.setSeller(authService.getCurrentUser());
             productRepository.save(product);
-            productDto.setId(product.getId());
-            return productDto;
+            return productMapper.toProductResponse(product);
         } else {
-            throw new ResourceNotFoundException("Category with id " + productDto.getCategoryId() + " not found.");
+            throw new CategoryNotFoundException("Category with id " + productRequest.getCategoryId() + " not found.");
         }
     }
-
-    public ProductDto updateProduct(ProductDto productDto) {
-        Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(
-                () -> new ResourceNotFoundException("Category with id " + productDto.getCategoryId() + " not found.")
-        );
-
-        Product product = productRepository.findById(productDto.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Product with id " + productDto.getId() + " not found.")
-        );
-
-        product.setCategory(category);
-        productMapper.updateProduct(productDto, product);
-        Product updated = productRepository.save(product);
-        return productMapper.toProductDto(updated);
-
-    }
-
-    public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Product with id " + id + " not found.")
-        );
-        productRepository.delete(product);
-
-    }
+//
+//    public ProductRequest updateProduct(ProductRequest productRequest) {
+//        Category category = categoryRepository.findById(productRequest.getCategoryId()).orElseThrow(
+//                () -> new ResourceNotFoundException("Category with id " + productRequest.getCategoryId() + " not found.")
+//        );
+//
+//        Product product = productRepository.findById(productRequest.getId()).orElseThrow(
+//                () -> new ResourceNotFoundException("Product with id " + productRequest.getId() + " not found.")
+//        );
+//
+//        product.setCategory(category);
+//        productMapper.updateProduct(productRequest, product);
+//        Product updated = productRepository.save(product);
+//        return productMapper.toProductDto(updated);
+//
+//    }
+//
+//    public void deleteProduct(Long id) {
+//        Product product = productRepository.findById(id).orElseThrow(
+//                () -> new ResourceNotFoundException("Product with id " + id + " not found.")
+//        );
+//        productRepository.delete(product);
+//
+//    }
 }
 

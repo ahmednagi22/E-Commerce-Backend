@@ -1,7 +1,6 @@
 package com.codewithahmed.ecommerce.auth;
 
 import com.codewithahmed.ecommerce.config.JwtConfig;
-import com.codewithahmed.ecommerce.user.UserRepository;
 import com.codewithahmed.ecommerce.user.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping("api/v1/auth")
 public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
@@ -25,6 +24,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserAuthResponseDto> registerUser(@Valid @RequestBody RegisterDto dto) {
+        System.out.println("registering user");
         return ResponseEntity.ok(authService.registerUser(dto));
     }
 
