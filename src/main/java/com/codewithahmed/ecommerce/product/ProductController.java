@@ -32,13 +32,13 @@ public class ProductController {
         return ResponseEntity.created(uri).body(createdProduct);
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<ProductRequest> updateProduct(@PathVariable Long id,
-//                                                        @RequestBody ProductRequest productRequest) {
-//        productRequest.setId(id);
-//        return ResponseEntity.ok(productService.updateProduct(productRequest));
-//    }
-//
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,
+                                                        @RequestBody ProductRequest productRequest) {
+        System.out.println("updating product ->>> " + id);
+        return ResponseEntity.ok(productService.updateProduct(id,productRequest));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
