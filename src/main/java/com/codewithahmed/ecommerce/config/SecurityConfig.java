@@ -1,6 +1,7 @@
 package com.codewithahmed.ecommerce.config;
 
 import com.codewithahmed.ecommerce.auth.JwtAuthenticationFilter;
+import com.codewithahmed.ecommerce.common.exception.SecurityRules;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,13 +22,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
     private final UserDetailsService UserDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    private final List<SecurityRules> featureSecurityRules;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -53,20 +56,19 @@ public class SecurityConfig {
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(c -> c
-                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/products/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/products").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE,"api/v1/products/**").hasAnyRole("SELLER","ADMIN")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/products/**").hasAnyRole("SELLER","ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/checkout/webhook").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/swagger-ui/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/webjars/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/swagger-resources/**").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(c -> {
+                    featureSecurityRules.forEach(r->r.configure(c));
+                    c.anyRequest().authenticated();
+                        }
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/register").permitAll()
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/login").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/checkout/webhook").permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/swagger-ui/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/v3/api-docs/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/webjars/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/swagger-resources/**").permitAll()
+//                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(c -> {
