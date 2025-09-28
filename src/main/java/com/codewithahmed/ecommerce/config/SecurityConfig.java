@@ -60,14 +60,10 @@ public class SecurityConfig {
                     featureSecurityRules.forEach(r->r.configure(c));
                     c.anyRequest().authenticated();
                         }
-//                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/register").permitAll()
-//                        .requestMatchers(HttpMethod.POST,"/api/v1/auth/login").permitAll()
+//
 //                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
 //                        .requestMatchers(HttpMethod.POST,"/api/v1/checkout/webhook").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/swagger-ui/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/v3/api-docs/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/webjars/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/swagger-resources/**").permitAll()
+
 //                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
